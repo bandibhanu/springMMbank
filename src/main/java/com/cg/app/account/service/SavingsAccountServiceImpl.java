@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cg.app.account.SavingsAccount;
 import com.cg.app.account.dao.SavingsAccountDAO;
@@ -43,14 +44,12 @@ public class SavingsAccountServiceImpl implements SavingsAccountService {
 
 	
 	public void deposit(SavingsAccount account, double amount) throws ClassNotFoundException, SQLException {
-		if (amount > 0) {
+		
 			double currentBalance = account.getBankAccount().getAccountBalance();
 			currentBalance += amount;
 			savingsAccountDAO.updateBalance(account.getBankAccount().getAccountNumber(), currentBalance);
 			//savingsAccountDAO.commit();
-		}else {
-			throw new InvalidInputException("Invalid Input Amount!");
-		}
+		
 	}
 	
 	public void withdraw(SavingsAccount account, double amount) throws ClassNotFoundException, SQLException {
@@ -64,20 +63,14 @@ public class SavingsAccountServiceImpl implements SavingsAccountService {
 		}
 	}
 
-	
+	@Transactional
 	public void fundTransfer(SavingsAccount sender, SavingsAccount receiver, double amount)
 			throws ClassNotFoundException, SQLException {
-		try {
+		
 			withdraw(sender, amount);
 			deposit(receiver, amount);
-			DBUtil.commit();
-		} catch (InvalidInputException | InsufficientFundsException e) {
-			e.printStackTrace();
-			DBUtil.rollback();
-		} catch(Exception e) {
-			e.printStackTrace();
-			DBUtil.rollback();
-		}
+			
+		
 	}
 
 	

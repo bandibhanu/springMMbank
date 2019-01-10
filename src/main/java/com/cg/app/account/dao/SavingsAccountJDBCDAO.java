@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+
 import com.cg.app.account.SavingsAccount;
 import com.cg.app.account.SavingsAccountMapper;
 import com.moneymoney.exception.AccountNotFoundException;
@@ -17,7 +18,6 @@ import com.moneymoney.exception.AccountNotFoundException;
 public class SavingsAccountJDBCDAO implements SavingsAccountDAO {
 	
 	@Autowired
-	
 	private JdbcTemplate template;
 
 	@Override
@@ -74,7 +74,7 @@ public class SavingsAccountJDBCDAO implements SavingsAccountDAO {
 
 	@Override
 	public void updateBalance(int accountNumber, double currentBalance) throws ClassNotFoundException, SQLException {
-		template.update("UPDATE ACCOUNT SET account_bal=? where account_id=?",new Object[] {accountNumber,currentBalance});
+		template.update("UPDATE ACCOUNT SET account_bal=? where account_id=?",new Object[] {currentBalance,accountNumber});
 		
 	}
 
@@ -104,9 +104,10 @@ public class SavingsAccountJDBCDAO implements SavingsAccountDAO {
 
 	@Override
 	public SavingsAccount updateAccount(SavingsAccount account) throws ClassNotFoundException, SQLException {
-		template.update("UPDATE account set account_id=?,account_hn=?,account_bal=?,salary=?,od_limit=?,account_type=? where account_id=?",new Object[] {});
-		return null;
+		template.update("UPDATE account set account_id=?,account_hn=?,account_bal=?,salary=?,od_limit=?,account_type=? where account_id=?",new Object[] { account.getBankAccount().getAccountNumber(),account.getBankAccount().getAccountHolderName(),
+				account.getBankAccount().getAccountBalance(),account.isSalary(),null,"SA",account.getBankAccount().getAccountNumber()});
 	
+		return account;
 	}
 
 	@Override
